@@ -2,3 +2,5 @@ customtkinter
 Pillow
 soundfile
 numpy
+matplotlib
+sounddevice

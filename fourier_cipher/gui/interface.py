@@ -23,6 +23,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from core.audio_cipher import cipher_audio
 from core.image_cipher import cipher_channel
+from gui.reconstruct_tab import ReconstructTab
 
 # -----------------------------------------------------------------------------
 # LOGGING — Log persistente em arquivo + console
@@ -525,7 +526,8 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Fourier Cipher")
-        self.geometry("860x640")
+        self.geometry("1100x720")
+        self.minsize(900, 620)
         self._build()
 
     def _build(self):
@@ -536,7 +538,7 @@ class App(ctk.CTk):
                      font=("Consolas",17,"bold"),
                      text_color="#58a6ff").pack(side="left", padx=20, pady=12)
         ctk.CTkLabel(hdr,
-                     text="FFT Cooley-Tukey  ·  SHA-256  ·  Rotação Complexa  ·  Python Puro",
+                     text="FFT Cooley-Tukey  ·  Rotação Complexa  ·  Reconstrução Espectral  ·  Python Puro",
                      font=("Consolas",9), text_color="#8b949e").pack(
                          side="left")
 
@@ -545,18 +547,21 @@ class App(ctk.CTk):
         tabs.pack(fill="both", expand=True, padx=14, pady=(10,0))
         tabs.add("🎵  Áudio")
         tabs.add("🖼  Imagem")
+        tabs.add("📊  Reconstrução")
 
-        # Log compartilhado
+        # Log compartilhado (não mostrado na aba Reconstrução, que tem os próprios gráficos)
         log_frame = ctk.CTkFrame(self)
         log_frame.pack(fill="x", padx=14, pady=(6,10))
         ctk.CTkLabel(log_frame, text="LOG",
                      font=("Consolas",10,"bold")).pack(anchor="w", padx=8, pady=(4,0))
-        self.log = LogBox(log_frame, height=100)
+        self.log = LogBox(log_frame, height=80)
         self.log.pack(fill="x", padx=8, pady=(0,8))
 
         AudioTab(tabs.tab("🎵  Áudio"), log=self.log).pack(
             fill="both", expand=True)
         ImageTab(tabs.tab("🖼  Imagem"), log=self.log).pack(
+            fill="both", expand=True)
+        ReconstructTab(tabs.tab("📊  Reconstrução"), log=self.log).pack(
             fill="both", expand=True)
 
         self.log.write("Sistema pronto. FFT iterativa · SHA-256 manual · "

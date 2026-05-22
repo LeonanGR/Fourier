@@ -3,13 +3,14 @@
 </h1>
 
 <p align="center">
-  <b>Criptografia de áudio e imagem via Transformada de Fourier — FFT Cooley-Tukey implementada do zero em Python puro.</b>
+  <b>Criptografia de áudio e imagem + visualização de reconstrução espectral via Transformada de Fourier — FFT Cooley-Tukey implementada do zero em Python puro.</b>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python"/>
   <img src="https://img.shields.io/badge/GUI-CustomTkinter-blueviolet?style=flat-square"/>
   <img src="https://img.shields.io/badge/FFT-Cooley--Tukey-orange?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Plots-Matplotlib-red?style=flat-square"/>
   <img src="https://img.shields.io/badge/licença-MIT-green?style=flat-square"/>
 </p>
 
@@ -17,15 +18,23 @@
 
 ## ✨ O que é o Fourier Cipher?
 
-O **Fourier Cipher** é uma ferramenta de criptografia que transforma arquivos de **áudio (WAV)** e **imagens (PNG/JPG/BMP)** em versões cifradas — irreconhecíveis sem a senha correta — utilizando a **Transformada Rápida de Fourier (FFT)** como base matemática.
+O **Fourier Cipher** é uma ferramenta que combina **criptografia** e **visualização espectral** de áudio e imagens, utilizando a **Transformada Rápida de Fourier (FFT)** como base matemática.
 
-> 🔬 **Diferencial acadêmico:** toda a matemática (FFT, IFFT, seno, cosseno, π, √, atan2) foi implementada **do zero em Python puro**, sem usar `math`, `cmath` ou `numpy` para os cálculos internos. O projeto é ideal para quem quer aprender DSP e criptografia na prática.
+O projeto possui **três módulos principais**, acessíveis diretamente pela interface gráfica:
+
+| Aba | Descrição |
+|---|---|
+| 🎵 **Áudio** | Cifra/decifra arquivos WAV por perturbação de fase 1D no domínio da frequência |
+| 🖼 **Imagem** | Cifra/decifra imagens PNG/JPG/BMP por perturbação de fase 2D (FFT 2D por canal RGB) |
+| 📊 **Reconstrução** | Visualizador espectral interativo — decompõe o áudio em frequências ordenadas por magnitude e reconstrói progressivamente |
+
+> 🔬 **Diferencial acadêmico:** toda a matemática (FFT, IFFT, seno, cosseno, π, √, atan2) foi implementada **do zero em Python puro**, sem usar `math`, `cmath` ou `numpy` para os cálculos internos.
 
 ---
 
 ## 🧠 Como funciona?
 
-### Algoritmo (Áudio e Imagem)
+### Algoritmo de Criptografia (Áudio e Imagem)
 
 ```
 Arquivo de entrada
@@ -49,6 +58,31 @@ Arquivo de entrada
   Arquivo cifrado (visualmente/auditivamente caótico)
 ```
 
+### Reconstrução Espectral (Visualizador)
+
+```
+Arquivo WAV
+       │
+       ▼
+  [1] FFT → espectro completo de frequências
+       │
+       ▼
+  [2] Ordenação por magnitude (loudest first)
+       │
+       ▼
+  [3] Seleção das top-k frequências (usuário controla via slider)
+       │
+       ▼
+  [4] IFFT com apenas k componentes
+       │
+       ▼
+  Sinal reconstruído + 3 gráficos em tempo real
+```
+
+---
+
+## 🗂 Módulos do Projeto
+
 | Componente | Descrição |
 |---|---|
 | `math_engine.py` | π (fórmula de Machin), sin/cos (Taylor), √ (Newton-Raphson), atan2 — **zero imports de math** |
@@ -56,7 +90,8 @@ Arquivo de entrada
 | `key_engine.py` | Gera a matriz-chave da senha usando `random.seed(senha)` → FFT |
 | `audio_cipher.py` | Aplica FFT 1D + soma/subtração da chave por canal |
 | `image_cipher.py` | Aplica FFT 2D + soma/subtração da chave por canal RGB |
-| `gui/interface.py` | Interface gráfica com CustomTkinter, abas de Áudio e Imagem, log em tempo real |
+| `gui/interface.py` | App principal: abas Áudio, Imagem e Reconstrução (CustomTkinter) |
+| `gui/reconstruct_tab.py` | Aba de reconstrução espectral com gráficos Matplotlib embutidos |
 
 ---
 
@@ -65,20 +100,21 @@ Arquivo de entrada
 ```
 Fourier/
 └── fourier_cipher/
-    ├── main.py               ← Ponto de entrada (GUI ou CLI)
-    ├── install_deps.py       ← Instalador automático de dependências
-    ├── requirements.txt      ← Dependências
+    ├── main.py                    ← Ponto de entrada (GUI ou CLI)
+    ├── install_deps.py            ← Instalador automático de dependências
+    ├── requirements.txt           ← Dependências
     ├── core/
-    │   ├── math_engine.py    ← Matemática do zero (π, sin, cos, √, atan2)
-    │   ├── fft_engine.py     ← FFT/IFFT 1D e 2D (Cooley-Tukey)
-    │   ├── key_engine.py     ← Geração de matriz-chave
-    │   ├── audio_cipher.py   ← Cifra/decifra áudio WAV
-    │   └── image_cipher.py   ← Cifra/decifra imagens RGB
+    │   ├── math_engine.py         ← Matemática do zero (π, sin, cos, √, atan2)
+    │   ├── fft_engine.py          ← FFT/IFFT 1D e 2D (Cooley-Tukey)
+    │   ├── key_engine.py          ← Geração de matriz-chave
+    │   ├── audio_cipher.py        ← Cifra/decifra áudio WAV
+    │   └── image_cipher.py        ← Cifra/decifra imagens RGB
     ├── gui/
-    │   └── interface.py      ← Interface gráfica (CustomTkinter)
+    │   ├── interface.py           ← Interface gráfica (App + abas Áudio/Imagem)
+    │   └── reconstruct_tab.py     ← Aba de reconstrução espectral (Matplotlib)
     ├── io_handlers/
-    │   ├── audio_io.py       ← Leitura/escrita de áudio
-    │   └── image_io.py       ← Leitura/escrita de imagens
+    │   ├── audio_io.py            ← Leitura/escrita de áudio
+    │   └── image_io.py            ← Leitura/escrita de imagens
     └── logs/
         └── fourier_cipher.log
 ```
@@ -100,12 +136,7 @@ cd Fourier/fourier_cipher
 
 ### 2. Instale as dependências
 
-**Opção A — script automático (recomendado):**
-```bash
-python install_deps.py
-```
-
-**Opção B — pip direto:**
+**Opção A — pip direto:**
 ```bash
 pip install -r requirements.txt
 ```
@@ -114,10 +145,12 @@ As dependências são:
 
 | Pacote | Uso |
 |---|---|
-| `customtkinter` | Interface gráfica moderna |
+| `customtkinter` | Interface gráfica moderna (dark mode) |
 | `Pillow` | Leitura e escrita de imagens |
 | `soundfile` | Leitura e escrita de áudio WAV |
-| `numpy` | Interop com soundfile (I/O) |
+| `numpy` | Operações de I/O e FFT no visualizador |
+| `matplotlib` | Gráficos embutidos na aba de Reconstrução |
+| `sounddevice` | Reprodução de áudio na aba de Reconstrução *(opcional)* |
 
 ---
 
@@ -128,25 +161,43 @@ cd fourier_cipher
 python main.py
 ```
 
-A janela principal abre com duas abas:
+A janela abre com **três abas**:
 
-### 🎵 Aba de Áudio
+---
 
-1. Clique em **`...`** ao lado de *"Arquivo de entrada"* e selecione um `.wav`
-2. (Opcional) Defina o nome do arquivo de saída — se vazio, gerado automaticamente como `nome_enc.wav` / `nome_dec.wav`
-3. Digite a **senha/chave** no campo correspondente (clique em 👁 para revelar)
-4. Selecione a operação: **Criptografar** ou **Descriptografar**
-5. Clique em **EXECUTAR** e acompanhe o log em tempo real
+### 🎵 Aba de Áudio — Criptografia
 
-### 🖼 Aba de Imagem
+1. Clique em **`...`** e selecione um arquivo `.wav`
+2. (Opcional) Defina o arquivo de saída — gerado automaticamente como `nome_enc.wav` / `nome_dec.wav`
+3. Digite a **senha/chave** (clique em 👁 para revelar)
+4. Selecione **Criptografar** ou **Descriptografar**
+5. Clique em **EXECUTAR** e acompanhe o log
+
+---
+
+### 🖼 Aba de Imagem — Criptografia
 
 1. Selecione uma imagem de entrada (`.png`, `.jpg`, `.bmp`)
-2. (Opcional) Defina o arquivo de saída (sempre salvo como `.png`)
+2. (Opcional) Defina o arquivo de saída (salvo como `.png`)
 3. Digite a senha
 4. Selecione **Criptografar** ou **Descriptografar**
-5. Clique em **EXECUTAR** — o preview da imagem resultante é exibido ao terminar
+5. Clique em **EXECUTAR** — preview da imagem resultante aparece ao terminar
 
-> ⚠ **Imagens grandes (> 256×256 px) podem demorar vários minutos** pois a FFT 2D é implementada em Python puro (sem NumPy). Recomenda-se usar imagens pequenas.
+> ⚠ **Imagens grandes (> 256×256 px) podem demorar vários minutos** pois a FFT 2D é implementada em Python puro. Recomenda-se imagens pequenas.
+
+---
+
+### 📊 Aba de Reconstrução — Visualizador Espectral
+
+1. Clique em **`…`** e selecione um arquivo `.wav`
+2. Clique em **CARREGAR & ANALISAR** — a FFT é calculada e os 3 gráficos aparecem:
+   - **Espectro:** todas as frequências (cinza), ativas (azul), componente atual (laranja)
+   - **Componente atual:** a onda senoidal da k-ésima frequência isolada
+   - **Reconstrução:** onda reconstruída (verde) sobreposta ao original (cinza)
+3. **Arraste o slider** para adicionar frequências ordenadas da mais forte para a mais fraca
+4. Use os **presets** (1%, 5%, 10%, 25%, 50%, 100%) para saltos rápidos
+5. Clique em **▶ AUTO** para animar automaticamente (controle de velocidade via **Passo**)
+6. Clique em **▶ OUVIR RECONSTRUÇÃO** ou **▶ OUVIR ORIGINAL** para reproduzir o áudio
 
 ---
 
@@ -176,7 +227,6 @@ python main.py --mode encrypt --type audio -i musica.wav -k "minha_senha"
 
 # Descriptografar o áudio
 python main.py --mode decrypt --type audio -i musica_enc.wav -k "minha_senha"
-# → gera musica_enc_dec.wav
 
 # Criptografar uma imagem
 python main.py --mode encrypt --type image -i foto.png -k "chave_secreta"
@@ -184,7 +234,6 @@ python main.py --mode encrypt --type image -i foto.png -k "chave_secreta"
 
 # Descriptografar a imagem
 python main.py --mode decrypt --type image -i foto_enc.png -k "chave_secreta"
-# → gera foto_enc_dec.png
 
 # Definir saída manualmente
 python main.py --mode encrypt --type audio -i a.wav -k "senha" -o saida.wav
@@ -199,7 +248,7 @@ O cifrador é **perfeitamente reversível**: ao descriptografar com a mesma senh
 - **Áudio**: usa aritmética modular 65536 (PCM-16) — sem clipping
 - **Imagem**: usa aritmética modular 256 (8 bits por canal) — sem overflow
 
-> ⚠ **Importante:** use a mesma senha para cifrar e decifrar. Senhas diferentes geram saídas incorretas.
+> ⚠ **Importante:** use a **mesma senha** para cifrar e decifrar. Senhas diferentes geram saídas incorretas.
 
 ---
 
@@ -223,6 +272,14 @@ O cifrador é **perfeitamente reversível**: ao descriptografar com a mesma senh
 | √x | Newton-Raphson (12 iterações, convergência quadrática) |
 | atan2(y, x) | Série de arctan com ajuste de quadrante |
 
+### Reconstrução Espectral
+
+- FFT via `numpy.fft.rfft` (eficiente para sinal real)
+- Frequências ordenadas por magnitude decrescente (*loudest first*)
+- Reconstrução com top-k componentes: `irfft` com espectro zerado exceto nas k frequências ativas
+- Métrica de energia: `Σ|mag_ativas|² / Σ|mag_totais|²`
+- Limite de 2 segundos de áudio para análise interativa em tempo real
+
 ---
 
 ## 📄 Licença
@@ -231,6 +288,27 @@ Este projeto está licenciado sob a **MIT License** — sinta-se livre para usar
 
 ---
 
+## 👥 Créditos
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/LeonanGR">
+        <img src="https://github.com/LeonanGR.png" width="80" style="border-radius:50%"/><br/>
+        <b>LeonanGR</b>
+      </a><br/>
+      <sub>Arquitetura · FFT Engine · Criptografia · GUI</sub>
+    </td>
+    <td align="center">
+      <a href="https://github.com/jaozin30718">
+        <img src="https://github.com/jaozin30718.png" width="80" style="border-radius:50%"/><br/>
+        <b>jaozin30718</b>
+      </a><br/>
+      <sub>Colaborador</sub>
+    </td>
+  </tr>
+</table>
+
 <p align="center">
-  Feito com 🧮 e Python puro por <a href="https://github.com/LeonanGR">LeonanGR</a>
+  Feito com 🧮 e Python puro
 </p>
