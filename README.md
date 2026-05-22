@@ -295,14 +295,14 @@ Este projeto está licenciado sob a **MIT License** — sinta-se livre para usar
     <td align="center">
       <a href="https://github.com/LeonanGR">
         <img src="https://github.com/LeonanGR.png" width="80" style="border-radius:50%"/><br/>
-        <b>LeonanGR</b>
+        <b>Leonan Rodrigues</b>
       </a><br/>
       <sub>Arquitetura · FFT Engine · Criptografia · GUI</sub>
     </td>
     <td align="center">
       <a href="https://github.com/jaozin30718">
         <img src="https://github.com/jaozin30718.png" width="80" style="border-radius:50%"/><br/>
-        <b>jaozin30718</b>
+        <b>João Vitor dos Santos</b>
       </a><br/>
       <sub>Colaborador</sub>
     </td>
