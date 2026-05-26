@@ -9,6 +9,9 @@ build/
 .eggs/
 *.egg
 
+# Outros
+SEMINARIO.md
+
 # Virtual environments
 venv/
 .venv/
@@ -22,7 +25,7 @@ fourier_cipher/logs/*.log
 *.wav
 *.webm
 *.webp
-*.jpg
+#*.jpg
 *.jpeg
 *.mp3
 *.mp4
