@@ -1,12 +1,13 @@
 # =============================================================================
 # MATH ENGINE
+# Nenhuma importação de biblioteca matemática.
 # =============================================================================
 
 
 # -----------------------------------------------------------------------------
 # PI — Fórmula de Machin: π = 16·arctan(1/5) - 4·arctan(1/239)
 # -----------------------------------------------------------------------------
-def _arctan_series(x: float, terms: int = 80) -> float: # Define a função, recebendo o valor x e o número de iterações terms (padrão 80).
+def _arctan_series(x: float, terms: int = 11) -> float: # Define a função, recebendo o valor x e o número de iterações terms (padrão 11).
     """Série de Taylor para arctan(x): Σ (-1)^n · x^(2n+1) / (2n+1)"""
     result = 0.0 # Inicializa a variável que acumulará o somatório da série.
     x_pow  = x   # Define a primeira potência de x (equivalente a x¹).
