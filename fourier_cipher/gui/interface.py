@@ -3,27 +3,19 @@
 # Pillow é usado exclusivamente para I/O e exibição de imagens.
 # soundfile é usado para I/O de áudio (leitura/escrita WAV/FLAC/OGG).
 # Toda a matemática vive nos módulos core/.
-#
-# OTIMIZAÇÕES:
-#   - Imports limpos (sem __import__ inline)
-#   - ProcessPoolExecutor para paralelizar os 3 canais RGB (~3x mais rápido)
-#   - logging para log persistente em arquivo
 # =============================================================================
 
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
-import soundfile as sf
-import numpy as np
+import wave
 import array as _array
 import threading
 import logging
 import os
 from concurrent.futures import ProcessPoolExecutor, as_completed
-
 from core.audio_cipher import cipher_audio
 from core.image_cipher import cipher_channel
-from gui.reconstruct_tab import ReconstructTab
 
 # -----------------------------------------------------------------------------
 # LOGGING — Log persistente em arquivo + console
@@ -57,16 +49,41 @@ FONT_HEAD = ("Consolas", 15, "bold")
 # =============================================================================
 
 def load_audio(path: str) -> tuple:
-    """Lê WAV com soundfile. Retorna (samples_por_canal, samplerate, subtype)."""
-    data, sr = sf.read(path, dtype='int16', always_2d=True)
-    subtype  = sf.info(path).subtype
-    # data shape: (frames, channels) → lista de canais
-    channels = [data[:, ch].tolist() for ch in range(data.shape[1])]
-    return channels, sr, subtype
+    """Lê WAV usando o módulo wave da biblioteca padrão (Python Puro)."""
+    with wave.open(path, 'rb') as wav_file:
+        n_ch      = wav_file.getnchannels()
+        sampwidth = wav_file.getsampwidth()
+        sr        = wav_file.getframerate()
+        n_frames  = wav_file.getnframes()
+        
+        # Lê os frames em bytes
+        raw_data = wav_file.readframes(n_frames)
+        
+        # Converte bytes para inteiros de 16 bits assinados
+        if sampwidth == 2:
+            data = _array.array('h')
+            data.frombytes(raw_data)
+        elif sampwidth == 1:
+            data = _array.array('b')
+            data.frombytes(raw_data)
+            # Converte para int16
+            data = _array.array('h', [s * 256 for s in data])
+        else:
+            raise ValueError(f"Largura de amostra de {sampwidth} bytes não suportada.")
+            
+        # Divide os dados intercalados nos canais correspondentes
+        channels = [[] for _ in range(n_ch)]
+        for i in range(0, len(data), n_ch):
+            for ch in range(n_ch):
+                if i + ch < len(data):
+                    channels[ch].append(data[i + ch])
+                    
+        subtype = f"PCM_{sampwidth * 8}"
+        return channels, sr, subtype
 
 
 def save_audio(path: str, channels: list, sr: int) -> None:
-    """Escreve WAV com soundfile."""
+    """Escreve WAV usando o módulo wave da biblioteca padrão (Python Puro)."""
     n_ch    = len(channels)
     frames  = len(channels[0])
     # Intercala canais: [ch0_s0, ch1_s0, ch0_s1, ...]
@@ -74,10 +91,13 @@ def save_audio(path: str, channels: list, sr: int) -> None:
     for i in range(frames):
         for ch in channels:
             flat.append(ch[i])
-    data = _array.array('h', flat)
-    sf.write(path,
-             np.frombuffer(data, dtype='int16').reshape(frames, n_ch),
-             sr, subtype='PCM_16')
+    data = _array.array('h', flat).tobytes()
+    
+    with wave.open(path, 'wb') as wav_file:
+        wav_file.setnchannels(n_ch)
+        wav_file.setsampwidth(2)  # 2 bytes por amostra (PCM 16-bit)
+        wav_file.setframerate(sr)
+        wav_file.writeframes(data)
 
 
 def load_image(path: str) -> tuple:
@@ -542,9 +562,7 @@ class App(ctk.CTk):
         tabs.pack(fill="both", expand=True, padx=14, pady=(10,0))
         tabs.add("🎵  Áudio")
         tabs.add("🖼  Imagem")
-        tabs.add("📊  Reconstrução")
 
-        # Log compartilhado (não mostrado na aba Reconstrução, que tem os próprios gráficos)
         log_frame = ctk.CTkFrame(self)
         log_frame.pack(fill="x", padx=14, pady=(6,10))
         ctk.CTkLabel(log_frame, text="LOG",
@@ -556,7 +574,4 @@ class App(ctk.CTk):
             fill="both", expand=True)
         ImageTab(tabs.tab("🖼  Imagem"), log=self.log).pack(
             fill="both", expand=True)
-        ReconstructTab(tabs.tab("📊  Reconstrução"), log=self.log).pack(
-            fill="both", expand=True)
-
         self.log.write("Sistema pronto. ")
