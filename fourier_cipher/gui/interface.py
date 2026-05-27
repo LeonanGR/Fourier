@@ -537,11 +537,6 @@ class App(ctk.CTk):
         ctk.CTkLabel(hdr, text="◈ FOURIER CIPHER",
                      font=("Consolas",17,"bold"),
                      text_color="#58a6ff").pack(side="left", padx=20, pady=12)
-        ctk.CTkLabel(hdr,
-                     text="FFT Cooley-Tukey  ·  Rotação Complexa  ·  Reconstrução Espectral  ·  Python Puro",
-                     font=("Consolas",9), text_color="#8b949e").pack(
-                         side="left")
-
         # Abas
         tabs = ctk.CTkTabview(self)
         tabs.pack(fill="both", expand=True, padx=14, pady=(10,0))
@@ -564,5 +559,4 @@ class App(ctk.CTk):
         ReconstructTab(tabs.tab("📊  Reconstrução"), log=self.log).pack(
             fill="both", expand=True)
 
-        self.log.write("Sistema pronto. FFT iterativa · SHA-256 manual · "
-                       "sin/cos adaptativos · rotação complexa · π via Machin.")
+        self.log.write("Sistema pronto. ")
