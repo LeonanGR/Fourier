@@ -10,10 +10,6 @@
 #
 # Complexos representados como listas [re, im] — sem classe, sem numpy.
 #
-# OTIMIZAÇÕES IMPLEMENTADAS:
-#   1. FFT iterativa (bit-reversal) — elimina alocação recursiva
-#   2. Twiddle factors pré-computados — evita recalcular sin/cos
-#   3. sincos_t() — calcula sin e cos numa única chamada
 # =============================================================================
 
 from core.math_engine import cos_t, sin_t, sincos_t, TWO_PI
