@@ -3,14 +3,13 @@
 </h1>
 
 <p align="center">
-  <b>Criptografia de áudio e imagem + visualização de reconstrução espectral via Transformada de Fourier — FFT Cooley-Tukey implementada do zero em Python puro.</b>
+  <b>Criptografia de áudio e imagem via Transformada de Fourier — FFT Cooley-Tukey implementada do zero em Python puro.</b>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python"/>
   <img src="https://img.shields.io/badge/GUI-CustomTkinter-blueviolet?style=flat-square"/>
   <img src="https://img.shields.io/badge/FFT-Cooley--Tukey-orange?style=flat-square"/>
-  <img src="https://img.shields.io/badge/Plots-Matplotlib-red?style=flat-square"/>
   <img src="https://img.shields.io/badge/licença-MIT-green?style=flat-square"/>
 </p>
 
@@ -18,15 +17,14 @@
 
 ## ✨ O que é o Fourier Cipher?
 
-O **Fourier Cipher** é uma ferramenta que combina **criptografia** e **visualização espectral** de áudio e imagens, utilizando a **Transformada Rápida de Fourier (FFT)** como base matemática.
+O **Fourier Cipher** é uma ferramenta que combina **criptografia** de áudio e imagens, utilizando a **Transformada Rápida de Fourier (FFT)** como base matemática.
 
-O projeto possui **três módulos principais**, acessíveis diretamente pela interface gráfica:
+O projeto possui **dois módulos principais**, acessíveis diretamente pela interface gráfica:
 
 | Aba | Descrição |
 |---|---|
 | 🎵 **Áudio** | Cifra/decifra arquivos WAV por perturbação de fase 1D no domínio da frequência |
 | 🖼 **Imagem** | Cifra/decifra imagens PNG/JPG/BMP por perturbação de fase 2D (FFT 2D por canal RGB) |
-| 📊 **Reconstrução** | Visualizador espectral interativo — decompõe o áudio em frequências ordenadas por magnitude e reconstrói progressivamente |
 
 > 🔬 **Diferencial acadêmico:** toda a matemática (FFT, IFFT, seno, cosseno, π, √, atan2) foi implementada **do zero em Python puro**, sem usar `math`, `cmath` ou `numpy` para os cálculos internos.
 
@@ -58,27 +56,6 @@ Arquivo de entrada
   Arquivo cifrado (visualmente/auditivamente caótico)
 ```
 
-### Reconstrução Espectral (Visualizador)
-
-```
-Arquivo WAV
-       │
-       ▼
-  [1] FFT → espectro completo de frequências
-       │
-       ▼
-  [2] Ordenação por magnitude (loudest first)
-       │
-       ▼
-  [3] Seleção das top-k frequências (usuário controla via slider)
-       │
-       ▼
-  [4] IFFT com apenas k componentes
-       │
-       ▼
-  Sinal reconstruído + 3 gráficos em tempo real
-```
-
 ---
 
 ## 🗂 Módulos do Projeto
@@ -90,8 +67,7 @@ Arquivo WAV
 | `key_engine.py` | Gera a matriz-chave da senha usando `random.seed(senha)` → FFT |
 | `audio_cipher.py` | Aplica FFT 1D + soma/subtração da chave por canal |
 | `image_cipher.py` | Aplica FFT 2D + soma/subtração da chave por canal RGB |
-| `gui/interface.py` | App principal: abas Áudio, Imagem e Reconstrução (CustomTkinter) |
-| `gui/reconstruct_tab.py` | Aba de reconstrução espectral com gráficos Matplotlib embutidos |
+| `gui/interface.py` | App principal: abas Áudio e Imagem (CustomTkinter) |
 
 ---
 
@@ -110,11 +86,10 @@ Fourier/
     │   ├── audio_cipher.py        ← Cifra/decifra áudio WAV
     │   └── image_cipher.py        ← Cifra/decifra imagens RGB
     ├── gui/
-    │   ├── interface.py           ← Interface gráfica (App + abas Áudio/Imagem)
-    │   └── reconstruct_tab.py     ← Aba de reconstrução espectral (Matplotlib)
+    │   └── interface.py           ← Interface gráfica (App + abas Áudio/Imagem)
     ├── io_handlers/
-    │   ├── audio_io.py            ← Leitura/escrita de áudio
-    │   └── image_io.py            ← Leitura/escrita de imagens
+    │   ├── audio_io.py            ← Leitura/escrita de áudio (legado/auxiliar)
+    │   └── image_io.py            ← Leitura/escrita de imagens (legado/auxiliar)
     └── logs/
         └── fourier_cipher.log
 ```
@@ -146,11 +121,9 @@ As dependências são:
 | Pacote | Uso |
 |---|---|
 | `customtkinter` | Interface gráfica moderna (dark mode) |
-| `Pillow` | Leitura e escrita de imagens |
-| `soundfile` | Leitura e escrita de áudio WAV |
-| `numpy` | Operações de I/O e FFT no visualizador |
-| `matplotlib` | Gráficos embutidos na aba de Reconstrução |
-| `sounddevice` | Reprodução de áudio na aba de Reconstrução *(opcional)* |
+| `Pillow` | Leitura, exibição e escrita de imagens |
+| `soundfile` | Leitura e escrita de áudio WAV (usado em scripts auxiliares de I/O) |
+| `numpy` | Operações de array no módulo I/O auxiliar |
 
 ---
 
@@ -161,7 +134,7 @@ cd fourier_cipher
 python main.py
 ```
 
-A janela abre com **três abas**:
+A janela abre com **duas abas**:
 
 ---
 
@@ -184,20 +157,6 @@ A janela abre com **três abas**:
 5. Clique em **EXECUTAR** — preview da imagem resultante aparece ao terminar
 
 > ⚠ **Imagens grandes (> 256×256 px) podem demorar vários minutos** pois a FFT 2D é implementada em Python puro. Recomenda-se imagens pequenas.
-
----
-
-### 📊 Aba de Reconstrução — Visualizador Espectral
-
-1. Clique em **`…`** e selecione um arquivo `.wav`
-2. Clique em **CARREGAR & ANALISAR** — a FFT é calculada e os 3 gráficos aparecem:
-   - **Espectro:** todas as frequências (cinza), ativas (azul), componente atual (laranja)
-   - **Componente atual:** a onda senoidal da k-ésima frequência isolada
-   - **Reconstrução:** onda reconstruída (verde) sobreposta ao original (cinza)
-3. **Arraste o slider** para adicionar frequências ordenadas da mais forte para a mais fraca
-4. Use os **presets** (1%, 5%, 10%, 25%, 50%, 100%) para saltos rápidos
-5. Clique em **▶ AUTO** para animar automaticamente (controle de velocidade via **Passo**)
-6. Clique em **▶ OUVIR RECONSTRUÇÃO** ou **▶ OUVIR ORIGINAL** para reproduzir o áudio
 
 ---
 
@@ -268,17 +227,9 @@ O cifrador é **perfeitamente reversível**: ao descriptografar com a mesma senh
 |---|---|
 | π | Fórmula de Machin: `π = 16·arctan(1/5) − 4·arctan(1/239)` |
 | sin(x) / cos(x) | Série de Taylor com normalização em `[−π, π]` |
-| sincos(x) | Calcula sin e cos simultaneamente (−50% de operações) |
+| sincos(x) | Calcula sin e cos simultaneamente (-50% de operações) |
 | √x | Newton-Raphson (12 iterações, convergência quadrática) |
 | atan2(y, x) | Série de arctan com ajuste de quadrante |
-
-### Reconstrução Espectral
-
-- FFT via `numpy.fft.rfft` (eficiente para sinal real)
-- Frequências ordenadas por magnitude decrescente (*loudest first*)
-- Reconstrução com top-k componentes: `irfft` com espectro zerado exceto nas k frequências ativas
-- Métrica de energia: `Σ|mag_ativas|² / Σ|mag_totais|²`
-- Limite de 2 segundos de áudio para análise interativa em tempo real
 
 ---
 

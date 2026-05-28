@@ -22,7 +22,7 @@ env/
 fourier_cipher/logs/*.log
 
 # Media samples (arquivos de teste pesados)
-*.wav
+#*.wav
 *.webm
 *.webp
 #*.jpg
