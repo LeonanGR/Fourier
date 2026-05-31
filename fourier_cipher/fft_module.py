@@ -52,9 +52,13 @@ def meu_exp_complex(angulo):
     Objetivo: Calcula a exponencial complexa e^(i * angulo).
     Por que: A FFT rotaciona componentes no plano complexo. Essa função gera o 
     "twiddle factor" (fator de rotação).
+    
+    Exemplo de retorno:
+        Para angulo = PI/2 (1.57079...), retorna o número complexo: (0.0 + 1.0j)
     """
     # Utilizamos a Fórmula de Euler: e^(ix) = cos(x) + i*sin(x).
-    # A função 'complex' nativa do Python serve apenas para juntar as duas partes em um único tipo de dado.
+    # A função 'complex' nativa do Python junta as duas partes real e imaginária.
+    # Exemplo: se cos=0.0 e sin=1.0, retorna o objeto complex: (0.0 + 1.0j)
     return complex(meu_cos(angulo), meu_sin(angulo))
 
 def fft1d(x):
