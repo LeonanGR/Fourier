@@ -50,7 +50,7 @@ def encrypt_flow():
     """
     # Pede o nome do arquivo que vai sofrer a criptografia
     # '.strip()' arranca os espaços sem querer gerados antes ou depois da string pelo usuário
-    in_path = input("Caminho da imagem original (ex: original.png): ").strip()
+    in_path = input("Digite o caminho da imagem original (ex: original.png): ").strip()
     
     # Prevenção: O sistema quebra se tentarmos abrir um fantasma.
     if not os.path.exists(in_path):
@@ -96,7 +96,7 @@ def encrypt_flow():
             canais_cripto.append(encrypted_fft)
 
         # A fase de salvar 
-        out_name = input("\nNome do arquivo final criptografado (ex: cripto.txt): ").strip()
+        out_name = input("\nDigite um nome para o arquivo final criptografado (ex: cripto.txt): ").strip()
         
         # Caso o dono seja apressado e dê 'ENTER' de tela vazia, forçamos um nome padrão!
         if not out_name:
@@ -126,7 +126,7 @@ def decrypt_flow():
     Função: decrypt_flow()
     Objetivo: O fluxo que inverte as Leis (Lê TXT -> Subtrai Senha -> IFFT -> Salva Imagem)
     """
-    in_path = input("Caminho do arquivo TXT criptografado (ex: cripto.txt): ").strip()
+    in_path = input("Digite o caminho do arquivo TXT criptografado (ex: cripto.txt): ").strip()
     
     # Se o texto ou os diretórios apontarem para o Vazio
     if not os.path.exists(in_path):
