@@ -111,7 +111,7 @@ def ifft1d(x):
     # Pega o tamanho do array
     N = len(x)
     
-    # Truque matemático: a Inversa da FFT pode ser calculada rodando a FFT normal
+    # A Inversa da FFT pode ser calculada rodando a FFT normal
     # em cima dos "conjugados complexos" da entrada (invertendo o sinal da parte imaginária).
     x_conj = [X.conjugate() for X in x]
     
