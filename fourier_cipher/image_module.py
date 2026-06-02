@@ -45,7 +45,7 @@ def load_original_image(caminho):
             
             # TRUQUE MATEMÁTICO: A função nativa `complex(real, imaginário)` 
             # transforma nossa cor (255) em um número complexo (255 + 0i).
-            # Por que? Porque a FFT só pode ser alimentada por números do mundo complexo.
+            # Por que? Porque a FFT só pode ser alimentada por números complexos.
             linha_r.append(complex(r, 0))
             linha_g.append(complex(g, 0))
             linha_b.append(complex(b, 0))
@@ -55,7 +55,7 @@ def load_original_image(caminho):
         matriz_g.append(linha_g)
         matriz_b.append(linha_b)
         
-    # Retornamos as 3 matrizes empacotadas numa única lista!
+    # Retornamos as 3 matrizes empacotadas numa única lista
     return [matriz_r, matriz_g, matriz_b]
 
 def save_encrypted_txt(canais_complexos, caminho):

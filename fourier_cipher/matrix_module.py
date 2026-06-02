@@ -69,7 +69,7 @@ def add_password_to_fft(matriz_fft, matriz_senha):
             valor_senha = matriz_senha[y][x]
             
             # Somamos o caos da senha tanto na parte Real quanto na Imaginária
-            # para destruir completamente qualquer padrão identificável da foto!
+            # para destruir completamente qualquer padrão identificável 
             novo_valor = complex(valor_fft.real + valor_senha, valor_fft.imag + valor_senha)
             nova_linha.append(novo_valor)
             
@@ -95,7 +95,6 @@ def sub_password_from_fft(matriz_criptografada, matriz_senha):
             
             # Subtraímos o ruído aleatório.
             # Se a senha for a correta, a matriz será subtraída perfeitamente, anulando o caos.
-            # Se errar 1 dígito da senha, o Random gerou uma matriz totalmente diferente. A 
             # subtração de matrizes diferentes apenas adicionará MAIS ruído à imagem, destruindo-a.
             novo_valor = complex(valor_cripto.real - valor_senha, valor_cripto.imag - valor_senha)
             nova_linha.append(novo_valor)

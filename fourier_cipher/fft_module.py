@@ -5,18 +5,17 @@ def meu_sin(x):
     """
     Função: meu_sin(x)
     Objetivo: Calcula o seno de um ângulo 'x' (em radianos) usando a Série de Taylor.
-    Por que: Como não podemos usar a biblioteca 'math', precisamos de um método numérico
     para calcular senos, que são essenciais para a fórmula de Euler na FFT.
     """
     # 1. Reduzimos o ângulo 'x' para o intervalo [-PI, PI].
-    # Por que: A Série de Taylor para o seno converge muito mais rápido e com menos erros
+    # Por que: A Série de Taylor para o seno converge muito mais rápido e com menos erro
     # quando o ângulo está próximo de zero.
     x = x % (2 * MEU_PI)
     if x > MEU_PI:
         # Se for maior que PI, subtraímos um círculo completo (2*PI) para trazê-lo ao negativo equivalente.
         x -= 2 * MEU_PI
         
-    # Inicializamos o resultado com 0.0 (ponto flutuante)
+    # Inicializamos o resultado com 0.0
     resultado = 0.0
     # O primeiro termo da série de Taylor do seno é o próprio 'x'
     termo = x
@@ -43,7 +42,6 @@ def meu_cos(x):
     Por que: Necessário para a fórmula de Euler.
     """
     # Usamos uma identidade trigonométrica fundamental: cos(x) = sin(x + PI/2).
-    # Assim, não precisamos escrever outra série de Taylor, reaproveitamos o 'meu_sin'.
     return meu_sin(x + MEU_PI / 2)
 
 def meu_exp_complex(angulo):
@@ -84,11 +82,23 @@ def fft1d(x):
     # Calculamos o vetor de rotação 'T' para combinar os resultados pares e ímpares.
     # Para cada k de 0 até a metade do tamanho (N/2), multiplicamos o resultado ímpar
     # pelo ângulo respectivo no círculo complexo.
-    T = [meu_exp_complex(-2 * MEU_PI * k / N) * impares[k] for k in range(N // 2)]
+    T = []
+    for k in range(N // 2):
+        # 1. Calcula o ângulo de rotação para este passo k
+        angulo = -2 * MEU_PI * k / N
+        
+        # 2. Gera o fator de rotação complexo (um ponto no círculo)
+        fator_rotacao = meu_exp_complex(angulo)
+        
+        # 3. Multiplica o valor da lista 'impares' na posição k por esse fator
+        elemento_rotacionado = fator_rotacao * impares[k]
+        
+        # 4. Adiciona o resultado na lista T
+        T.append(elemento_rotacionado)
     
     # A primeira metade da FFT final é a soma dos pares com o fator de rotação T.
     # A segunda metade é a subtração (simetria do círculo complexo).
-    # O caractere '\' apenas indica que o código continua na linha de baixo.
+    # O caractere '\' indica que o código continua na linha de baixo.
     return [pares[k] + T[k] for k in range(N // 2)] + \
            [pares[k] - T[k] for k in range(N // 2)]
 
